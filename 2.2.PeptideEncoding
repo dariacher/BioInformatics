@@ -1,0 +1,88 @@
+// ConsoleApplication6.cpp: определяет точку входа для консольного приложения.
+//
+
+#include "stdafx.h"
+
+
+#include <iostream>
+#include <map>  
+#include <string>
+using namespace std;
+
+map<string, char> RNACtable = { { "AAA", 'K' },{ "AAC", 'N' },{ "AAG", 'K' },{ "AAU", 'N' },{ "ACA", 'T' },{ "ACC", 'T' },{ "ACG", 'T' },{ "ACU", 'T' },
+{ "AGA", 'R' },{ "AGC", 'S' },{ "AGG", 'R' },{ "AGU", 'S' },{ "AUA", 'I' },{ "AUC", 'I' },{ "AUG", 'M' },{ "AUU", 'I' },
+{ "CAA", 'Q' },{ "CAC", 'H' },{ "CAG", 'Q' },{ "CAU", 'H' },{ "CCA", 'P' },{ "CCC", 'P' },{ "CCG", 'P' },{ "CCU", 'P' },
+{ "CGA", 'R' },{ "CGC", 'R' },{ "CGG", 'R' },{ "CGU", 'R' },{ "CUA", 'L' },{ "CUC", 'L' },{ "CUG", 'L' },{ "CUU", 'L' },
+{ "GAA", 'E' },{ "GAC", 'D' },{ "GAG", 'E' },{ "GAU", 'D' },{ "GCA", 'A' },{ "GCC", 'A' },{ "GCG", 'A' },{ "GCU", 'A' },
+{ "GGA", 'G' },{ "GGC", 'G' },{ "GGG", 'G' },{ "GGU", 'G' },{ "GUA", 'V' },{ "GUC", 'V' },{ "GUG", 'V' },{ "GUU", 'V' },
+{ "UAA", ' ' },{ "UAC", 'Y' },{ "UAG", ' ' },{ "UAU", 'Y' },{ "UCA", 'S' },{ "UCC", 'S' },{ "UCG", 'S' },{ "UCU", 'S' },
+{ "UGA", ' ' },{ "UGC", 'C' },{ "UGG", 'W' },{ "UGU", 'C' },{ "UUA", 'L' },{ "UUC", 'F' },{ "UUG", 'L' },{ "UUU", 'F' } };
+
+string Translation(string pattern) {
+	string peptide;
+	for (int i = 0; i < pattern.length() - 3; i += 3) {
+		peptide += RNACtable.at(pattern.substr(i, 3));
+	}
+	return peptide;
+}
+
+string ReversePattern(string pattern) {
+	string reversePattern = "";
+	for (int i = 0; i < pattern.length(); i++) {
+		switch (pattern[i]) {
+		case 'C': 
+			reversePattern = 'G' + reversePattern;
+			break;
+
+		case 'G': 
+			reversePattern = 'C' + reversePattern;
+			break;
+
+		case 'A': 
+			reversePattern = 'T' + reversePattern;
+			break;
+
+		case 'T': 
+			reversePattern = 'A' + reversePattern;
+			break;
+		}
+	}
+	return reversePattern;
+}
+
+string Transcription(string dna) {
+	string rna = "";
+	for (int i = 0; i < dna.length(); i++) {
+		if (dna[i] == 'T')
+		{
+			rna+='U';
+		}
+		else
+		{
+			rna+=dna[i];
+		}
+	}
+	return rna;
+}
+
+int main() {
+	
+	string dna, geneticCode, peptide;
+	cin >> dna;
+	cin >> peptide;
+	for (int i = 0; i < dna.length() - peptide.length() * 3 + 1; i++) {
+		string rna = Transcription(dna.substr(i, peptide.length() * 3));
+		//tmpRNA = ReversePattern(dna.substr(i, peptide.length() * 3));
+		string reverseRNA = Transcription(ReversePattern(dna.substr(i, peptide.length() * 3)));
+
+		if (peptide == Translation(rna) || peptide == Translation(reverseRNA)) {
+			geneticCode += dna.substr(i, peptide.length() * 3) + '\n';
+		}
+	}
+	if (!geneticCode.empty())
+	{
+		geneticCode.pop_back();
+	}
+	cout << geneticCode;
+	return 0;
+}
