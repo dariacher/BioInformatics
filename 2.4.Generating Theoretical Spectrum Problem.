@@ -25,11 +25,7 @@ int main() {
 	cin >> peptide;
 
 	tmp = peptide;
-
-	for (int i = 0; i < peptide.length(); i++)
-	{
-		tmp.push_back(peptide[i]);
-	}
+	tmp+= peptide;
 
 	for (int i = 1; i < peptide.length(); i++) {
 		for (int j = 0; j < peptide.length(); j++) {
