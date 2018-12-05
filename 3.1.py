@@ -1,31 +1,14 @@
 import sys
-masses = {'G': 57, 'A': 71, 'S': 87, 'P': 97, 'V': 99, 'T': 101, 'C': 103, 'I': 113, 'L': 113, 'N': 114, 'D': 115, 'K': 128, 'Q': 128, 'E': 129, 'M': 131, 'H': 137, 'F': 147, 'R': 156, 'Y': 163, 'W': 186}
+
+masses = {'G': 57,'A': 71,'S': 87,'P': 97,'V': 99,'T': 101,'C': 103,'I': 113,'N': 114,'D': 115,'K': 128,'E': 129,'M': 131,
+    'H': 137,'F': 147,'R': 156,'Y': 163,'W': 186}
+
 
 def getMassOfPeptide(peptide):
     mass = 0
-    for i in peptide:
-        mass += masses[i]
+    for p in peptide:
+        mass += masses[p]
     return mass
-
-
-def linearSpectr(peptide):
-    if len(peptide) == 1:
-        return str(masses[peptide])
-    Cmasses = [0]
-    massOfPeptide = 0
-    for i in peptide:
-        Cmasses.append(masses[i])
-        massOfPeptide += masses[i]
-    Cmasses.append(massOfPeptide)
-    for j in range(2, len(peptide)):
-        for k in range(0, len(peptide)):
-            subPeptide = peptide[k:k+j]
-            mass = 0
-            for i in subPeptide:
-                mass+=masses[i]
-            Cmasses.append(mass)
-    return " ".join(str(x) for x in sorted(Cmasses))
-
 
 def CycloSpectr(peptide):
     Cmasses = [0]
@@ -36,55 +19,97 @@ def CycloSpectr(peptide):
         massOfPeptide += masses[i]
     Cmasses.append(massOfPeptide)
     for j in range(2, len(peptide)):
-        for k in range(0, len(peptide)):
+        for k in range(len(peptide)):
             subPeptide = cyclePeptide[k:k+j]
             mass = 0
             for i in subPeptide:
-                mass+=masses[i]
+                mass = mass + masses[i]
             Cmasses.append(mass)
-    return " ".join(str(x) for x in sorted(Cmasses))
+    resultList = []
+    sortedMasses = sorted(Cmasses)
+    for p in sortedCmasses:
+        resultList.append(str(p))
+    result = " ".join(resultList)
+    return result
+
+def LinearSpectr(peptide):
+    if len(peptide) == 1:
+        return str(masses[peptide])
+
+    Cmasses = [0]
+
+    mass = 0
+    for p in peptide:
+        Cmasses.append(masses[p])
+        mass += masses[p]
+    Cmasses.append(mass)
+
+    for i in range(2, len(peptide)):
+        for j in range(len(peptide) - i):
+            subpeptide = peptide[j:j + i]
+            m = 0
+            for s in subpeptide:
+                m = m + masses[s]
+            Cmasses.append(m)
+
+    resultList = []
+    sortedMasses = sorted(Cmasses)
+    for p in sortedCmasses:
+        resultList.append(str(p))
+    result = " ".join(resultList)
+    return result
 
 def Expand(peptides):
     allPeptides = []
-    for eachPeptide in peptides:
+    for peptide in peptides:
         for m in masses:
-            allPeptides.append(eachPeptide + m)
+            allPeptides.append(peptide + m)
     return allPeptides
 
+
 def Consistent(peptide, spectrum):
-    massOfPeptide = [int(x) for x in linearSpectr(peptide).split(' ')]
-    massOfSpectrum = [int(x) for x in spectrum.split(' ')]
-    for eachMass in massOfPeptide:
-        if eachMass in massOfSpectrum:
-            pass
-        else:
+    massOfPeptide = []
+    linSpectr = LinearSpectr(peptide).split(" ")
+    for ls in linSpectr:
+        massOfPeptide.append(int(ls))
+    massOfSpectr = []
+    spectr = spectrum.split(" ")
+    for ls in spectr:
+        massOfSpectr.append(int(ls))
+    
+    for mass in massofPeptide:
+        if mass not in massOfSpectr:
             return False
     return True
 
-def main():
-    spectrum = sys.stdin.readline().rstrip()
-    parentMass = int(spectrum.split(' ')[-1])
 
-    peptides = [""]
+def checkup(spectrum, parentMass):
     finishPeptides = []
-
+    peptides=[""]
     while len(peptides) > 0:
         peptides = Expand(peptides)
-        peptides1 = peptides[:]
-        for peptide in peptides1:
+        constPeptides = peptides[:]
+        for peptide in constPeptides:
             if getMassOfPeptide(peptide) == parentMass:
                 if CycloSpectr(peptide).strip() == spectrum.strip():
                     finishPeptides.append(peptide)
                 peptides.remove(peptide)
             elif not Consistent(peptide, spectrum):
                 peptides.remove(peptide)
+    return finishPeptides
+
+def main():
+    spectrum = sys.stdin.readline().rstrip()
+    parentMass = int(spectrum.split(' ')[-1])
+
+    checkup(spectrum, parentMass)
+
     Cmasses = []
-    for pep in finishPeptides:
+    for i in finishPeptides:
         mass = []
-        for i in pep:
-            mass.append(masses[i])
+        for j in i:
+            mass.append(masses[j])
         Cmasses.append('-'.join([str(x) for x in mass]))
     print(" ".join(Cmasses))
 
-    if __name__ == '__main__':
-        main()
+main()
