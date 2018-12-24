@@ -12,15 +12,22 @@ def hammingDistance(pat1, pat2):
 
 def d(pattern, dna):
     k = len(pattern)
-    dist = list(hammingDistance(pattern, dna[i:i + k]) for i in range(len(dna) - k + 1))
-    minD = min(dist)
+    dist = []
+    for i in range(len(dna) - k):
+        dist.append(hammigDistance(pattern, dna[i:i+k]))
+
+    minD = 1000000
+    for m in dist:
+        if minD > m:
+            minD = m
+    
     return minD
 
 
 def distOfDna(dna, pattern):
     sum = 0
-    for dnai in dna:
-        sum += d(pattern, dnai)
+    for eachDna in dna:
+        sum += d(pattern, eachDna)
     return sum
 
 
